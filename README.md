@@ -110,7 +110,7 @@ The Modularity Score is used to quantify narrative organization:
 
 ##  Dashboard Preview
 
-![Dashboard Preview](assets/dashboard.png)
+![Dashboard Preview](assets/Dashboard.png)
 
 The generated dashboard includes:
 
