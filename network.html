@@ -1,0 +1,166 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 100vh;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <style>
+            #table-container { position: absolute; top: 20px; left: 20px; z-index: 10; 
+            background: rgba(255, 255, 255, 0.9); padding: 15px; border-radius: 8px; 
+            border: 1px solid #ccc; max-height: 80vh; overflow-y: auto; }
+        </style>
+        <div id='table-container'>
+            <h4>Narrative Complexity</h4>
+            <p><strong>Modularity:</strong> 0.042</p>
+            <table border="1" class="dataframe table table-striped">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Character</th>
+      <th>Group</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Annabeth</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Luke</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Percy Jackson</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Grover</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>Mrs Dodds</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+        </div>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#FFadad", "font": {"color": "black"}, "id": "Annabeth", "label": "Annabeth (G0)", "shape": "dot", "size": 10, "title": "The Strategist: Daughter of Athena, highly intelligent."}, {"color": "#FFadad", "font": {"color": "black"}, "id": "Luke", "label": "Luke (G0)", "shape": "dot", "size": 10, "title": "The Antagonist/Mentor: Son of Hermes, complex character."}, {"color": "#FFadad", "font": {"color": "black"}, "id": "Percy Jackson", "label": "Percy Jackson (G0)", "shape": "dot", "size": 10, "title": "The Protagonist: A demigod son of Poseidon."}, {"color": "#ffd6a5", "font": {"color": "black"}, "id": "Grover", "label": "Grover (G1)", "shape": "dot", "size": 10, "title": "The Protector: A satyr and Percy\u0027s best friend."}, {"color": "#ffd6a5", "font": {"color": "black"}, "id": "Mrs Dodds", "label": "Mrs Dodds (G1)", "shape": "dot", "size": 10, "title": "Character in the story."}]);
+                  edges = new vis.DataSet([{"from": "Annabeth", "to": "Luke", "width": 2}, {"from": "Annabeth", "to": "Percy Jackson", "width": 3}, {"from": "Annabeth", "to": "Grover", "width": 2}, {"from": "Annabeth", "to": "Mrs Dodds", "width": 1}, {"from": "Luke", "to": "Percy Jackson", "width": 2}, {"from": "Luke", "to": "Grover", "width": 1}, {"from": "Grover", "to": "Mrs Dodds", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"edges": {"color": {"color": "#848484"}, "smooth": {"type": "dynamic"}}, "physics": {"barnesHut": {"gravitationalConstant": -10000, "springLength": 300}}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
