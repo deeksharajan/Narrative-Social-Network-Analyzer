@@ -179,7 +179,7 @@ Narrative-Social-Network-Analyzer/
 
 ---
 
-## ▶ Usage
+##  Usage
 
 Run the main script:
 
